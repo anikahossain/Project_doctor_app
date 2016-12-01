@@ -1,0 +1,35 @@
+<!-- <html>
+<head>
+    <title>API TEST</title>
+    <script type="text/javascript">
+        function getApiData() {
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('GET', 'https://api.betterdoctor.com/2016-03-01/doctors?location=37.773%2C-122.413%2C100&user_location=37.773%2C-122.413&skip=0&limit=10&user_key=705afbee08e4b69ffce243dfeb346f50');
+
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                    console.log(xmlhttp.responseText);//json file
+                    processData(xmlhttp.responseText);
+                    }
+                }
+            }
+            xmlhttp.send();
+            // send request
+        }
+        function processData(data){
+          document.querySelector("h1").textContent=data;//function to navigate through data
+        }
+    </script>
+</head>
+<body>
+    <form name="Demo" action="" method="post">
+        <div>
+            <input type="button" value="click" onclick="getApiData();" />
+        </div>
+    </form>
+    <h1></h1>
+</body>
+<html> -->
+
