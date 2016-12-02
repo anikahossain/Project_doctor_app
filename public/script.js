@@ -17,12 +17,16 @@ console.log('script is running!');
   };
   //on click, run docinfo, pass in the value of the input field and append it to your ajax url.
 // docInfo();
-document.querySelector('#docsearch input[type="submit"]').addEventListener('click', function(e){ //sends event as arguement
+var submit = document.querySelector('#docsearch input[type="submit"]');
+if (submit){
+  submit.addEventListener('click', function(e){ //sends event as arguement
   e.preventDefault();
   var state = document.querySelector('#docsearch input[name="state"]').value;
   var city = document.querySelector('#docsearch input[name="city"]').value;
   docInfo(state + "-" + city); //won't be called until the submit button is clicked
 }); //targets submit button in the doc search form
+}
+
 
 
 function handleDoctorData(data){
@@ -98,8 +102,46 @@ console.log(id);
 
 
 
+//shows individual doctor thats been saved
+function showDocInfo(){
+  console.log("showDocInfo");
+$("#doc_url p").each(function(index, el) { //grabs each individual <p> element
+  var uid = $(this).text();
+  $.ajax ({
+    url: "https://api.betterdoctor.com/2016-03-01/doctors/"+ uid +"?user_key=705afbee08e4b69ffce243dfeb346f50",
+    method: "GET",
+    datatype: "jsonp"
+  })
+  .done(function(data){
+console.log(data);
+    handleSingleDocData(data);
+  });
+ });
+};
+showDocInfo();
+
+//show doctor's specific data
+function handleSingleDocData(data){
+  var name = data.data.profile.first_name + " " + data.data.profile.middle_name + " " +  data.data.profile.last_name + " " + data.data.profile.title + " " + (data.data.profile.gender==="female"?"&#9792;":"&#9794;");
+  var addr = data.data.practices[0].visit_address;
+  var address = addr.street + " " + addr.city + " " + addr.state + " " + addr.zip;
+  var results = htmlDrTemplate({
+    name: name, //objects made from vars defined
+    address: address
+  });
+  document.querySelector("#saveddoctors").innerHTML += results;
+}
+
+function htmlDrTemplate(obj){
+  var results = "<h3>" + obj.name + "</h3>";
+  results += "<p>" + obj.address + "</p>";
+  return results;
+}
 
 
 
 
 });
+
+
+

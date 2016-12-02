@@ -17,11 +17,24 @@
     </div>
   </header>
   <a href = "/logout">Log Out</a>
-  <a href="/quick_search">Search for more Doctors</a>
+  <a href="/quick_search">Search Doctors</a>
   <a href="/userdashboard">View Saved Doctors</a>
+  <a href="/">Delete Account</a>
+  <a href="/userdashboard">Update Preferences</a>
 <p>{{id}}</p>
 <p>{{email}}</p>
+
+<!-- put these in hidden divs with a class of doc_url or some such -->
+<div id="saveddoctors"></div>
+<div hidden id="doc_url">
+{{#url_string}}
+<p>{{url_string}}</p>
+{{/url_string}}
+</div>
+
 <!--sends users id to userdashboard page, need to know user id to save preferences, need to know which user is saving preferences -->
+<script src="/jquery.js"></script>
+<script src="/script.js"></script>
 </body>
 </html>
 

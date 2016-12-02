@@ -5,6 +5,8 @@ var mustacheExpress = require('mustache-express');
 const bodyParser = require("body-parser");
 const session = require('express-session');
 var bcrypt = require('bcrypt');
+var methodOverride = require('method-override');
+
 var db = pgp(process.env.DATABASE_URL || 'postgres://anikakazi@localhost:5432/doctorapp');
 
 
@@ -98,7 +100,15 @@ app.get("/userdashboard", function(req, res){
     "email": email,
     "id": id
   }
-  res.render("userdashboard", user);
+  //make database call to get
+  db.many("SELECT url_string FROM preferences WHERE user_id = $1", [id])
+  .then(function(data){
+    console.log('ysy')
+    console.log(data)
+    user.url_string = data
+    res.render("userdashboard", user);
+  })
+
 })
 
 //routes back to homepage
@@ -112,39 +122,6 @@ app.get('/logout', function(req,res){
 })
 
 
-
-//posts login into to userdashboard
-// app.post("/userdashboard", function(req, res){
-//   console.log("HIT POST USERDASHBOARD")
-//   res.render("userdashboard");
-// });
-
-// app.post("/signup", function(req,res){
-//   console.log(req.body.email, req.body.password);
-
-//   db.one("INSERT INTO users(email, password_digest) values($1, $2) returning id", [req.body.email, req.body.password])
-//     .then(function(data){
-//       console.log(data.id);
-//       res.render("userdashboard", {id: data.id});
-//     })
-//     .catch(function(error){
-//       console.log("Error, User could not be made", error.message || error);
-//     });
-// });
-
-
-// app.post("/userdashboard", function(req, res){
-//   console.log(req.body.email, req.body.password);
-
-//   db.one("INSERT INTO users(email, password_digest) values($1, $2) returning id", [req.body.email, req.body.password])
-//   .then(function(data){
-//     console.log(data.id);
-//     res.render("userdashboard", {id: data.id});
-//   })
-//   .catch(function(error){
-//     console.log("Error, User could not be made", error.message || error);
-//   });
-// })
 
 app.post("/signup", function(req, res){
   var data = req.body;
@@ -191,60 +168,38 @@ app.post('/login', function(req, res){
 });
 
 
-
+//saves doctor to userdashboard
 app.post('/saveDoctor', function(req, res){
   var uid = req.body.uid;
   db.none("INSERT INTO preferences (user_id, url_string) VALUES ($1, $2)", [req.session.user.id, uid]); //prepared statement, alwasy do when submitting data into a database
 });
 
-// app.post("/userdashboard", function(req, res){
-//   console.log("HIT GET DASHBOARD")
-//   var data = req.body;
-//   console.log(data);
-//     db.one(
-//       "SELECT * FROM users WHERE email =$1",
-//       [data.email]
-//       )
-//     .then(function(user){
-//       console.log("user", user);
-//       res.render("userdashboard", {user: user});
-//     })
-//     .catch(function(error){
-//       console.log("Error, User could not be made", error.message || error);
-//     })
-//   });
 
+//deletes user
+app.delete('/userdashboard/:id',function(req, res){
+  id = req.params.id
+  db.none("DELETE FROM users WHERE id=$1", [id])
+  res.render('/')
+});
 
-// app.get("/userdashboard", function(req, res){
-//   console.log(req.body.id, req.body.email, req.body.password);
-//   db.one("SELECT * FROM users WHERE id=)")
-//   .then(function(data){
-//     console.log(data.id);
-//     res.render("userdashboard");
-//   })
+// //updates a single users preferences
+// app.put('/user/:id', function(req,res){
+//   user = req.body
+//   preferences = req.params.preferences
+//   db.none("UPDATE preferences SET ")
 // })
+// //update a single user.
+// app.put('/users/:id',function(req, res){
+//   user = req.body
+//   id = req.params.id
 
-// app.post("/userdashboard", function(req, res){
-//   var data = req.body;
-//   bcrypt.hash(data.password, 10, function(err, hash){
-//     db.none(
-//       "INSERT INTO users (email, password_digest) VALUES ($1, $2)",
-//       [data.email, hash]
-//       ).then(function(data){
-//         console.log("data2", data);
-//         res.render("userdashboard", {id: data.id});
-//       })
-//       .catch(function(error){
-//         console.log("Error, User could not be made", error.message || error);
-//       })
-//   });
+//   db.none("UPDATE users SET name=$1, email=$2, password=$3 WHERE id=$4",
+//     [user.name,user.email,user.password,id])
+
+//   res.redirect('/users/'+id);
 // });
 
 
 
 
 
-
-// app.get("/apitest", function(req,res){
-//   res.render("apitest");
-// });
